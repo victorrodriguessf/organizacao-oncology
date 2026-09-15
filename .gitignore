@@ -1,0 +1,14 @@
+node_modules/
+dist/
+data/*.json
+!data/library.json
+!data/workbook.json
+data/*.tmp
+*.xlsx
+!data/source/BASE DE DADOS GERAL.xlsx
+.env*
+!.env.example
+test-results/
+playwright-report/
+__pycache__/
+.DS_Store

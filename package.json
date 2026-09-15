@@ -1,0 +1,37 @@
+{
+  "name": "organizacao-oncology",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build": "tsc --noEmit && vite build",
+    "start": "tsx server.ts --production",
+    "lint": "tsc --noEmit",
+    "extract": "python3 scripts/extract_workbook.py",
+    "test": "python3 -m unittest discover -s tests -p 'test_*.py'",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "animejs": "^4.2.0",
+    "express": "^4.21.2",
+    "jose": "^6.2.12",
+    "lucide-react": "^0.546.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.18.1",
+    "tailwindcss": "^4.1.14"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
