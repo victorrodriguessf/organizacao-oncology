@@ -1,43 +1,94 @@
 import { test, expect } from '@playwright/test';
+
 test.beforeEach(async ({ context }) => {
  const response = await context.request.post('/api/auth/login', { data: { username: 'admin', password: 'admin' } });
  expect(response.ok()).toBe(true);
 });
-test('dashboard, filter, original source, and filtered export', async ({page}) => {
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('/');await expect(page.getByRole('heading',{name:'Sua rede, em uma só visão.'})).toBeVisible();
- await expect(page.getByText('102',{exact:true})).toBeVisible();
- await page.getByRole('combobox',{name:'Todas as unidades'}).selectOption('CSM');
- await page.getByRole('button',{name:/Profissionais na base/}).click();
- await expect(page.getByRole('heading',{name:'Corpo clínico',exact:true})).toBeVisible();
- await page.getByRole('textbox',{name:'Buscar nesta visão'}).fill('Cristina');
- await expect(page.locator('tbody tr')).toHaveCount(1);
- const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Exportar consulta'}).click();expect((await downloadPromise).suggestedFilename()).toBe('oncology-consulta.csv');
- await page.getByRole('button',{name:/Ver detalhes de/}).click();await expect(page.getByRole('dialog')).toBeVisible();
- await page.getByRole('dialog').getByRole('button').filter({hasText:'CORPO CLINICO CSM'}).click();
- await expect(page).toHaveURL(/aba=sheet-5/);await expect(page.locator('.highlight-row')).toHaveCount(1);
+
+test('unit to specialty to doctor shows only unit-specific information', async ({ page }) => {
+ const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
+ await page.goto('/');
+ await expect(page.getByRole('heading', { name: /Pessoas que cuidam.*Informações que conectam/ })).toBeVisible();
+ await expect(page.locator('.unit-tile')).toHaveCount(5);
+ await page.locator('.unit-tile').filter({ hasText: 'Clínica de Oncologia e Mastologia' }).click();
+ await expect(page.getByRole('heading', { name: 'Clínica de Oncologia e Mastologia' })).toBeVisible();
+ await expect(page.getByRole('tab', { name: 'Especialidades' })).toHaveAttribute('aria-selected', 'true');
+ await page.getByLabel('Buscar nesta unidade').fill('Oncologia Clínica');
+ await page.getByRole('link', { name: /Oncologia Clínica.*profissionais/ }).first().click();
+ await expect(page.getByRole('heading', { name: 'Oncologia Clínica' })).toBeVisible();
+ await page.locator('.person-card').first().click();
+ await expect(page.getByRole('heading', { name: 'Convênios atendidos' })).toBeVisible();
+ await expect(page.getByRole('heading', { name: 'Dias de atendimento' })).toBeVisible();
+ await expect(page.getByText('Informações de COMN')).toBeVisible();
+ await page.getByText(/Versões clínicas nas abas da planilha/).click();
+ await expect(page.locator('.source-version').first()).toBeVisible();
  expect(errors).toEqual([]);
 });
-test('search, all modules, filters and empty states',async({page})=>{
- await page.goto('/');await page.getByRole('textbox',{name:'Buscar nesta visão'}).fill('40304485');await expect(page.getByText('Mielograma - punção aspirativa de medula óssea')).toBeVisible();
- for(const path of ['/atendimentos','/convenios','/credenciamento','/procedimentos','/equipe','/qualidade']){await page.goto(path);await expect(page.locator('tbody tr').first()).toBeVisible();}
- await page.goto('/credenciamento');await page.getByRole('combobox',{name:'Todas as situações'}).selectOption('Não solicitar');await expect(page.locator('tbody tr')).toHaveCount(6);
- await page.getByRole('textbox',{name:'Buscar nesta visão'}).fill('sem-resultado-xyz');await expect(page.getByText('Nenhum registro encontrado')).toBeVisible();
- await page.goto('/procedimentos');await page.getByRole('tab',{name:'Base de negociação'}).click();await page.getByRole('textbox',{name:'Buscar nesta visão'}).fill('60023082');await expect(page.locator('tbody tr')).toHaveCount(4);
+
+test('admin creates and updates a professional, with changes surviving reload', async ({ page, context }) => {
+ const registration = String(Date.now()).slice(-10);
+ await page.goto('/unidades/CSM');
+ await page.getByRole('button', { name: 'Cadastrar profissional' }).last().click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.getByLabel('Nome completo').fill('Dra. Exemplo Integração');
+ await page.getByLabel('Número do registro').fill(registration);
+ await page.getByLabel('UF do registro').selectOption('RN');
+ await page.getByLabel('Especialidades do vínculo 1').fill('Mastologia');
+ await page.getByLabel('Convênios do vínculo 1').fill('Convênio Teste');
+ await page.getByRole('button', { name: 'Adicionar horário' }).click();
+ await page.getByLabel('Dias do horário 1, vínculo 1').fill('Segunda-feira');
+ await page.getByLabel('Turno do horário 1, vínculo 1').fill('Manhã');
+ await page.getByRole('button', { name: 'Salvar cadastro' }).click();
+ await expect(page.getByRole('dialog')).not.toBeVisible();
+ await expect(page.getByRole('status')).toContainText('Cadastro salvo');
+ await page.getByLabel('Buscar nesta unidade').fill('Mastologia');
+ await page.getByRole('link', { name: /Mastologia.*profissionais/ }).first().click();
+ await page.getByLabel('Buscar nesta unidade').fill('Exemplo Integração');
+ await page.locator('.person-card').filter({ hasText: 'Exemplo Integração' }).click();
+ await expect(page.getByText('Convênio Teste')).toBeVisible();
+ await expect(page.getByText('Segunda-feira')).toBeVisible();
+ await page.getByRole('button', { name: 'Editar profissional' }).click();
+ await page.getByLabel('Nome completo').fill('Dra. Exemplo Atualizada');
+ await page.getByRole('button', { name: 'Salvar cadastro' }).click();
+ await page.reload();
+ await expect(page.getByRole('heading', { name: 'Dra. Exemplo Atualizada' })).toBeVisible();
+ const data = await (await context.request.get('/api/guide')).json();
+ expect(data.professionals.some((p: { registration: string; name: string }) => p.registration === registration && p.name === 'Dra. Exemplo Atualizada')).toBe(true);
 });
-test('mobile navigation, all tabs and keyboard dialog',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/');
- await expect(page.getByRole('heading',{name:'Sua rede, em uma só visão.'})).toBeVisible();
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
- await page.waitForTimeout(1200);await page.screenshot({path:'test-results/mobile.png',fullPage:true});
- await page.getByRole('button',{name:'Abrir menu'}).click();await page.getByRole('link',{name:'Convênios e valores'}).click();
- for(const tab of ['Habilitação de serviços','Vínculos COMN','Listas gerais','Observações do mapeamento']){await page.getByRole('tab',{name:tab}).click();await expect(page.locator('tbody tr').first()).toBeVisible();}
- await page.getByRole('button',{name:/Ver detalhes de/}).first().click();await expect(page.getByRole('dialog')).toBeVisible();await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).not.toBeVisible();
- const overflow=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,elements:[...document.querySelectorAll('body *')].map(e=>({tag:e.tagName,cls:e.className,right:e.getBoundingClientRect().right,width:e.getBoundingClientRect().width})).filter(e=>e.right>innerWidth+1)}));
- expect(overflow.scroll,JSON.stringify(overflow)).toBeLessThanOrEqual(overflow.width);
+
+test('exams are explicitly assigned to a unit and can be edited', async ({ page }) => {
+ await page.goto('/unidades/COMN?aba=exames');
+ await expect(page.getByRole('tab', { name: 'Exames' })).toHaveAttribute('aria-selected', 'true');
+ await page.getByRole('button', { name: 'Cadastrar exame' }).first().click();
+ await page.getByLabel('Nome do exame').fill('Exame de integração');
+ await page.getByLabel('Código').fill('TEST001');
+ await page.getByRole('button', { name: 'Salvar cadastro' }).click();
+ await expect(page.getByRole('dialog')).not.toBeVisible();
+ await expect(page.getByRole('link', { name: /Exame de integração/ })).toBeVisible();
+ await page.getByRole('link', { name: /Exame de integração/ }).click();
+ await expect(page.getByRole('heading', { name: 'Exame de integração' })).toBeVisible();
+ await page.getByRole('button', { name: 'Editar exame' }).click();
+ await page.getByLabel('Informações do exame').fill('Informação revisada');
+ await page.getByRole('button', { name: 'Salvar cadastro' }).click();
+ await page.reload();
+ await expect(page.getByText('Informação revisada')).toBeVisible();
+ await page.goto('/unidades/CSM?aba=exames');
+ await expect(page.getByText('Exame de integração')).toHaveCount(0);
 });
-test('desktop screenshot and raw workbook coverage',async({page})=>{
- await page.setViewportSize({width:1440,height:1100});await page.goto('/');await expect(page.getByText('102',{exact:true})).toBeVisible();await page.waitForTimeout(900);await page.screenshot({path:'test-results/desktop.png',fullPage:true});
- await page.goto('/base');const select=page.getByRole('combobox',{name:'Selecione a aba'});await expect(select.locator('option')).toHaveCount(20);
- await select.selectOption('sheet-15');await page.getByRole('textbox',{name:'Buscar na aba'}).fill('CARTAO DE DEBITO');await expect(page.locator('tbody tr').first()).toContainText('CARTAO DE DEBITO');
+
+test('CNPJ can be maintained per existing unit; mobile layout has no overflow', async ({ page }) => {
+ await page.goto('/unidades/CSM');
+ await page.getByRole('button', { name: 'Dados da unidade' }).click();
+ await page.getByLabel('CNPJ').fill('12.345.678/0001-90');
+ await page.getByLabel('Razão social').fill('Clínica São Marcos Ltda');
+ await page.getByRole('button', { name: 'Salvar cadastro' }).click();
+ await expect(page.getByText('12.345.678/0001-90')).toBeVisible();
+ await page.setViewportSize({ width: 390, height: 844 });
+ await page.goto('/');
+ await expect(page.locator('.unit-tile')).toHaveCount(5);
+ expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+ await page.waitForTimeout(900);
+ await page.screenshot({ path: 'test-results/guide-mobile.png', fullPage: true });
+ await page.setViewportSize({ width: 1440, height: 1000 });
+ await page.screenshot({ path: 'test-results/guide-desktop.png', fullPage: true });
 });

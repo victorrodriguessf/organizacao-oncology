@@ -1,6 +1,6 @@
 # Organização Oncology
 
-Interface local de consulta da **BASE DE DADOS GERAL.xlsx**, com extração reproduzível, dados reais e referência à origem de cada registro.
+Guia web da rede Oncology Group, construído a partir das 19 abas da **BASE DE DADOS GERAL.xlsx**. A interface mostra unidades, especialidades, profissionais, convênios, dias de atendimento e exames. O cadastro manual atualiza um arquivo JSON no servidor, sem modificar a planilha original.
 
 ## Executar
 
@@ -9,54 +9,50 @@ npm install
 npm run dev
 ```
 
-Abra **http://127.0.0.1:3000**. Entre com **login `admin` e senha `admin`**. O servidor inicia somente no endereço local. Para usar outra porta: `PORT=3001 npm run dev`.
+Abra **http://127.0.0.1:3000** e entre com `admin` / `admin`. O servidor inicia somente no endereço local. Para usar outra porta: `PORT=3001 npm run dev`.
 
-Este repositório privado inclui os JSONs em `data/` e a planilha original em `data/source/`. A instalação pode ser executada após `npm install`, sem refazer a extração. Os dados não fazem parte do bundle estático e são acessíveis pela API autenticada. O arquivo local `data/auth.json`, que contém o hash de senha e a chave JWT, não é versionado.
+O repositório privado inclui `data/library.json`, `data/workbook.json` e `data/source/BASE DE DADOS GERAL.xlsx`. O arquivo `data/auth.json` (hash de senha e chave JWT) é criado na primeira execução e não é versionado. O arquivo `data/manual.json` guarda as alterações feitas na interface e também não é versionado. A cada atualização, o servidor cria `data/manual.backup.json` com a versão anterior. **Guarde esses dois arquivos no backup da instalação** para preservar os cadastros.
 
-Para reproduzir a extração da planilha incluída:
+Para atualizar a extração após mudar a planilha:
 
 ```bash
 npm run extract -- "data/source/BASE DE DADOS GERAL.xlsx"
 ```
 
-Depois de atualizar o Excel, execute novamente esse comando e recarregue o navegador. Não há sincronização automática nem edição da planilha pela interface.
+O guia lê a biblioteca extraída e aplica os cadastros manuais por cima dela. Uma nova extração preserva `data/manual.json`; confira os vínculos depois de substituir a planilha. Não há sincronização automática com Excel.
 
-## Stack
+## Como o guia funciona
 
-React 19, TypeScript, Vite 6, Tailwind CSS 4, Lucide React e React Router, seguindo o `package.json` do [banco-praticas-inovadoras](https://github.com/victorrodriguessf/banco-praticas-inovadoras). Express serve a API local. Anime.js 4 faz as transições de entrada, com `createScope`, limpeza no desmontar e respeito a movimento reduzido, seguindo a [documentação oficial para React](https://animejs.com/documentation/getting-started/using-with-react/).
+- **Unidades:** cinco unidades da base atual. CNPJ e razão social ficam vazios até serem confirmados. O administrador pode atualizar a identificação das unidades existentes. Nenhuma unidade nova foi presumida.
+- **Especialidades:** aparecem dentro da unidade selecionada, com busca e filtros locais de convênio e dia. A especialidade leva à lista dos profissionais vinculados.
+- **Profissional:** o cadastro é único por conselho e registro. Cada unidade tem seus próprios vínculos, especialidades, convênios e horários. A página do profissional mostra esses dados na unidade escolhida e sinaliza campos não informados.
+- **Exames:** são cadastrados explicitamente por unidade, com descrição, código, convênios e profissionais associados. O catálogo de procedimentos da planilha auxilia o preenchimento; um item do catálogo não é automaticamente considerado um exame oferecido pela clínica.
+- **Origem:** cadastros importados indicam a planilha e suas referências. Atualizações manuais são identificadas. Valores divergentes na fonte permanecem no arquivo de extração, sem fusão silenciosa.
 
-A extração usa Python 3 e apenas a biblioteca padrão, lendo os XMLs do XLSX diretamente. Não exige Excel instalado.
+O foco do guia é o corpo clínico e os serviços. Informações de contrato e acompanhamento de credenciamento da planilha não aparecem na interface.
 
-## Consultas disponíveis
+## Stack e arquivos
 
-- **Visão geral:** indicadores calculados da base, filtros por unidade, busca de profissionais/convênios/procedimentos e panorama do credenciamento.
-- **Corpo clínico:** profissionais por conselho/registro, especialidades, vínculos, contratos, grafias da fonte e dados pessoais ocultos nos detalhes.
-- **Dias de atendimento:** dias e turnos originais; não é agenda de marcação de consultas.
-- **Convênios e valores:** valores por especialidade, serviços habilitados, exportação COMN, listas gerais e anotações de contexto.
-- **Credenciamentos:** matriz comercial e acompanhamento específico de Mossoró, mantidos como versões independentes.
-- **Procedimentos:** catálogo, bases de negociação, condições e notas. Referências do arquivo, sem validação externa ou inferência de vigência.
-- **Equipe:** quatro versões de equipe, com filtros de setor e origem, sem fusão silenciosa de cadastros.
-- **Qualidade da base:** diferenças de valores, RQE, cadastro de equipe, datas inválidas, vínculos incompletos e totais divergentes.
-- **Biblioteca:** todas as 19 abas, busca, paginação, coordenadas, destaque da linha de origem e exportação JSON integral.
-
-Tabelas possuem ordenação, paginação e exportação CSV do conjunto filtrado. A exportação CSV inclui a origem e neutraliza fórmulas executáveis. Exportações JSON preservam o conteúdo original, incluindo os dados pessoais.
-
-## Arquivos
+React 19, TypeScript, Vite 6, Tailwind CSS 4, React Router, Lucide React e Anime.js 4. Express serve a API e a autenticação local. A stack segue o `package.json` do [banco-praticas-inovadoras](https://github.com/victorrodriguessf/banco-praticas-inovadoras). O uso de `createScope` no React e a limpeza das animações seguem a [documentação oficial do Anime.js](https://animejs.com/documentation/getting-started/using-with-react/). A extração usa Python 3 e a biblioteca padrão, lendo o XML do XLSX diretamente.
 
 | Arquivo | Função |
 | --- | --- |
-| `scripts/extract_workbook.py` | Extração do XLSX e construção das entidades de consulta |
-| `data/source/BASE DE DADOS GERAL.xlsx` | Planilha original para reproduzir a extração |
-| `data/workbook.json` | Todas as células com valor, inclusive espaços, metadados de tipo/formatação, mesclagens, linhas e abas |
-| `data/library.json` | Biblioteca operacional e pontos de conferência |
-| `docs/ANALISE-DA-BASE.md` | Interpretação das abas, fluxo, decisões e sugestões |
-| `src/App.tsx` | Interface e módulos de consulta |
-| `server.ts` | API local e servidor de desenvolvimento/produção |
-| `tests/` | Testes da extração e navegação no navegador |
+| `scripts/extract_workbook.py` | Extração reproduzível da planilha |
+| `data/library.json` | Biblioteca operacional importada |
+| `data/workbook.json` | Células e abas originais da planilha |
+| `guide-store.ts` | Projeção do guia, validação e gravação segura dos cadastros |
+| `guide-api.ts` | API autenticada de consulta e cadastro |
+| `src/App.tsx` / `src/GuideForms.tsx` | Navegação e formulários administrativos |
+| `docs/ANALISE-DA-BASE.md` | Interpretação da planilha e suas divergências |
+| `tests/` | Testes da extração, autenticação e fluxos no navegador |
 
-O arquivo integral preserva o texto das células sem modificá-lo. A biblioteca de consulta normaliza espaços e converte datas/valores em campos derivados. O JSON não reproduz o layout de impressão nem os objetos gráficos do Excel; as logos fornecidas estão em `public/logos/`.
+## Autenticação e dados
 
-## Validação e produção local
+Há apenas um usuário, `admin`, com senha inicial `admin`, conforme solicitado. O servidor armazena um hash scrypt da senha e assina JWTs HS256 com uma chave aleatória. A sessão fica no cookie `oncology_session`, com `HttpOnly`, `SameSite=Strict` e validade de oito horas. As rotas `/api/guide` e `/api/auth/me` exigem sessão válida; as gravações exigem papel de administrador, JSON e origem permitida. O token não é guardado em localStorage.
+
+O servidor não oferece `data/` como pasta estática. A API de guia serve somente os campos necessários para a interface; a planilha e os JSONs integrais continuam como arquivos locais. Antes de disponibilizar o sistema pela internet, configure HTTPS e substitua a senha inicial por uma senha forte.
+
+## Validar e executar em produção local
 
 ```bash
 npm test
@@ -67,21 +63,6 @@ npm run test:e2e
 npm start
 ```
 
-`npm start` serve o build e as APIs na mesma origem. Um host estático que receba somente `dist/` não é suficiente: a aplicação depende de `/api/library` e `/api/workbook`.
+`npm start` serve o build e a API na mesma origem. Hospedar apenas `dist/` não funciona porque o guia depende de `/api/guide`. Os testes de navegador usam a porta 3100 e guardam os cadastros de teste em `test-results/guide-store`, sem tocar em `data/manual.json`.
 
-## Autenticação
-
-- Apenas um usuário: **admin**, senha inicial **admin**, conforme solicitado. Não há cadastro público.
-- JWT assinado com HS256 usando [jose](https://github.com/panva/jose), verificado no servidor com emissor, destinatário, assinatura e expiração.
-- Cookie `oncology_session` com `HttpOnly`, `SameSite=Strict`, validade de 8 horas e `Secure` quando a conexão direta é HTTPS. O token não é armazenado em localStorage ou exposto ao JavaScript da página.
-- Senha armazenada com scrypt e salt aleatório; chave de assinatura aleatória persistida em `data/auth.json`, criado automaticamente na primeira execução, com permissões 0600. Esse arquivo não é servido nem versionado. Não removê-lo para atualizar a planilha.
-- `/api/library`, `/api/workbook` e `/api/auth/me` exigem sessão válida. Login e logout são feitos por POST JSON com verificação de origem. Há limite de 30 tentativas falhas por IP em 15 minutos.
-- Logout revoga o identificador do JWT no servidor e comunica a saída às outras abas. Reiniciar o servidor encerra todas as sessões, pois o registro de sessões ativas é mantido em memória.
-- A interface volta ao login ao expirar a sessão, receber 401 ou detectar a saída em outra aba. Erros de rede ao sair são informados para permitir nova tentativa.
-- Os testes de navegador executam em uma instância isolada na porta 3100, sem reutilizar o servidor de uso na porta 3000.
-
-## Limites desta versão
-
-O projeto continua sendo uma aplicação **local de consulta**, com um único administrador. Ocultar CPF e nascimento é um recurso visual adicional; a autenticação protege as APIs. Para uso compartilhado, a evolução inclui HTTPS, configuração para hospedagem e contas/perfis individuais. Nenhum serviço externo recebe o conteúdo da planilha durante a execução da aplicação.
-
-Os rótulos, instruções de trabalho e observações presentes nas células são tratados como **dados**, não como comandos de execução ou instruções para alterar convênios. Nenhuma atualização de credenciamento, envio de mensagem ou alteração na planilha foi realizada.
+As observações e instruções nas células da planilha são tratadas como **dados de origem**, não como comandos para o sistema.

@@ -1,21 +1,16 @@
 import express from 'express';
 import { createAuth } from './auth';
-import { readFile } from 'node:fs/promises';
+import { createGuideRouter } from './guide-api';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.disable('x-powered-by');
 app.use('/api', (_req, res, next) => { res.set('Cache-Control', 'no-store'); res.set('X-Content-Type-Options', 'nosniff'); next(); });
-app.use('/api', express.json({ limit: '4kb' }));
+app.use('/api', express.json({ limit: '128kb' }));
 const auth = await createAuth(root);
 app.use('/api/auth', auth.router);
-for (const name of ['library', 'workbook']) {
-  app.get(`/api/${name}`, auth.requireAuth, async (_req, res) => {
-    try { res.type('json').send(await readFile(path.join(root, 'data', `${name}.json`), 'utf8')); }
-    catch { res.status(503).json({ error: 'Base indisponível. Execute a extração da planilha e recarregue.' }); }
-  });
-}
+app.use('/api/guide', createGuideRouter(root, auth.requireAuth));
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Recurso não encontrado.' }));
 app.use(((error, _req, res, _next) => {
