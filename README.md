@@ -11,7 +11,9 @@ npm run dev
 
 Abra **http://127.0.0.1:3000** e entre com `admin` / `admin`. O servidor inicia somente no endereço local. Para usar outra porta: `PORT=3001 npm run dev`.
 
-O repositório privado inclui `data/library.json`, `data/workbook.json` e `data/source/BASE DE DADOS GERAL.xlsx`. O arquivo `data/auth.json` (hash de senha e chave JWT) é criado na primeira execução e não é versionado. O arquivo `data/manual.json` guarda as alterações feitas na interface e também não é versionado. A cada atualização, o servidor cria `data/manual.backup.json` com a versão anterior. **Guarde esses dois arquivos no backup da instalação** para preservar os cadastros.
+Os arquivos de `data/`, incluindo `library.json`, `workbook.json` e a planilha original, não são versionados porque contêm dados pessoais e comerciais. Em uma instalação nova, obtenha a planilha por um canal privado autorizado, coloque-a em `data/source/BASE DE DADOS GERAL.xlsx` e execute a extração abaixo antes de iniciar o servidor para gerar a biblioteca necessária ao guia. O clone do repositório, sozinho, não inclui a base de dados.
+
+O arquivo `data/auth.json` (hash de senha e chave JWT) é criado na primeira execução e não é versionado. O arquivo `data/manual.json` guarda as alterações feitas na interface e também não é versionado. A cada atualização, o servidor cria `data/manual.backup.json` com a versão anterior. **Guarde esses dois arquivos no backup da instalação** para preservar os cadastros.
 
 Para atualizar a extração após mudar a planilha:
 
