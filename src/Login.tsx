@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { animate, createScope, stagger } from 'animejs';
 import { ArrowRight, Database, Eye, EyeOff, LockKeyhole, ShieldCheck, UserRound, AlertCircle, LoaderCircle, Layers3 } from 'lucide-react';

@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 import { test, expect } from '@playwright/test';
 
 test('cadastro API validates duplicate doctors, stale writes and existing units', async ({ request }) => {

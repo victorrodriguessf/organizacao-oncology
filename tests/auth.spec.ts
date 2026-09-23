@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { SignJWT } from 'jose';

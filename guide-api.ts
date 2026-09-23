@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 import { Router, type RequestHandler } from 'express';
 import path from 'node:path';
 import { GuideStore, GuideError } from './guide-store';

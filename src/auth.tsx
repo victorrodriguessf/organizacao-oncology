@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import Login from './Login';

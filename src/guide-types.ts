@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 export interface GuideSource { sheet: string; cell: string }
 export interface GuideVersion { unitId: string; name: string; specialty: string; rqe: string; days: string; shift: string; source: GuideSource }
 export interface GuideUnit { id: string; name: string; short: string; logo: string | null; color: string; cnpj: string; legalName: string; entityId: string }

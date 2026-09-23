@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 import express from 'express';
 import { createAuth } from './auth';
 import { createGuideRouter } from './guide-api';

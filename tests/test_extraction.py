@@ -1,3 +1,4 @@
+# Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 import importlib.util, json, pathlib, unittest, collections, zipfile, xml.etree.ElementTree as ET
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'scripts/extract_workbook.py');extractor=importlib.util.module_from_spec(spec);spec.loader.exec_module(extractor)

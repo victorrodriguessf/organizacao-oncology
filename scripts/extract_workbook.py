@@ -1,4 +1,5 @@
 """Lossless sparse XLSX extraction plus source-linked operational views. Stdlib only."""
+# Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 from __future__ import annotations
 import argparse, collections, datetime as dt, hashlib, json, pathlib, re, unicodedata, zipfile
 import xml.etree.ElementTree as ET

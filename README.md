@@ -1,6 +1,33 @@
 # Organização Oncology
 
-Guia web da rede Oncology Group, construído a partir das 19 abas da **BASE DE DADOS GERAL.xlsx**. A interface mostra unidades, especialidades, profissionais, convênios, dias de atendimento e exames. O cadastro manual atualiza um arquivo JSON no servidor, sem modificar a planilha original.
+Plataforma web para organizar e consultar informações operacionais da rede Oncology Group a partir das 19 abas da **BASE DE DADOS GERAL.xlsx**. Ela reúne unidades, especialidades, profissionais, vínculos, convênios, dias de atendimento e exames em uma interface única, com busca, filtros e manutenção de cadastros.
+
+O sistema transforma a planilha em uma biblioteca estruturada, preserva a origem dos registros e aplica as alterações feitas na interface em uma camada separada. Assim, a planilha original não é modificada e divergências da fonte continuam disponíveis para conferência.
+
+## Autoria e licença
+
+**Desenvolvido originalmente por [Victor Rodrigues (@victorrodriguessf)](https://github.com/victorrodriguessf).**
+
+O projeto pode ser executado, mantido e modificado nos termos da [licença de uso com atribuição obrigatória](LICENSE). O crédito de autoria original deve permanecer no código, na documentação e na interface das versões modificadas. Consulte também o [aviso de autoria](NOTICE.md) e a documentação sobre [direitos e componentes de terceiros](docs/DIREITOS-E-TERCEIROS.md).
+
+## Estado do projeto
+
+O projeto está documentado para transferência técnica. Ele funciona localmente em um único processo persistente, mas ainda exige mudanças de autenticação, persistência e proxy antes de ser disponibilizado na internet ou implantado em arquitetura serverless.
+
+Os dados reais não fazem parte do Git. O receptor precisa receber a planilha e os arquivos operacionais necessários por canal privado autorizado.
+
+## Documentação
+
+| Documento | Quando consultar |
+| --- | --- |
+| [Entrega técnica](docs/ENTREGA-TECNICA.md) | Início da transição e checklist de aceite |
+| [Arquitetura](docs/ARQUITETURA.md) | Manutenção de código, API e modelo de dados |
+| [Dados e operação](docs/DADOS-E-OPERACAO.md) | Importação, gravação, backup e restauração |
+| [Deploy](docs/DEPLOY.md) | Escolha de infraestrutura e preparação de produção |
+| [Segurança](docs/SEGURANCA.md) | Riscos conhecidos e controles existentes |
+| [Direitos e terceiros](docs/DIREITOS-E-TERCEIROS.md) | Autoria, titularidade, marcas e dependências |
+| [Análise da base](docs/ANALISE-DA-BASE.md) | Origem, regras de extração e divergências |
+| [Auditoria detalhada](docs/AUDITORIA-SEGURANCA.md) | Evidências da revisão feita em 23/09/2026 |
 
 ## Executar
 
@@ -10,6 +37,8 @@ npm run dev
 ```
 
 Abra **http://127.0.0.1:3000** e entre com `admin` / `admin`. O servidor inicia somente no endereço local. Para usar outra porta: `PORT=3001 npm run dev`.
+
+Prefira `npm ci` em uma instalação limpa para reproduzir o `package-lock.json`. A credencial acima é exclusiva do ambiente de desenvolvimento e bloqueia a publicação até ser substituída.
 
 Os arquivos de `data/`, incluindo `library.json`, `workbook.json` e a planilha original, não são versionados porque contêm dados pessoais e comerciais. Em uma instalação nova, obtenha a planilha por um canal privado autorizado, coloque-a em `data/source/BASE DE DADOS GERAL.xlsx` e execute a extração abaixo antes de iniciar o servidor para gerar a biblioteca necessária ao guia. O clone do repositório, sozinho, não inclui a base de dados.
 
@@ -32,6 +61,14 @@ O guia lê a biblioteca extraída e aplica os cadastros manuais por cima dela. U
 - **Origem:** cadastros importados indicam a planilha e suas referências. Atualizações manuais são identificadas. Valores divergentes na fonte permanecem no arquivo de extração, sem fusão silenciosa.
 
 O foco do guia é o corpo clínico e os serviços. Informações de contrato e acompanhamento de credenciamento da planilha não aparecem na interface.
+
+Em termos de fluxo:
+
+1. o script Python lê o XLSX e gera `workbook.json` e `library.json`;
+2. o servidor Express autentica o administrador e projeta a biblioteca para a interface;
+3. o React permite consultar unidades, profissionais, especialidades e exames;
+4. alterações administrativas são validadas pela API e gravadas em `manual.json`;
+5. a cada leitura, a base importada e os registros manuais são combinados sem alterar a planilha.
 
 ## Stack e arquivos
 

@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { X, Plus, Trash2, Save, AlertCircle, Building2 } from 'lucide-react';
 import { logoOptions, states, labelCase, type GuideData, type GuideProfessional, type GuideUnit, type GuideExam, type Placement } from './guide-types';

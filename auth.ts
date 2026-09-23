@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 import { Router, type Request, type RequestHandler, type CookieOptions } from 'express';
 import { randomBytes, randomUUID, scrypt, timingSafeEqual } from 'node:crypto';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';

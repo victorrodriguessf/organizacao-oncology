@@ -2,6 +2,8 @@
   "name": "organizacao-oncology",
   "private": true,
   "version": "1.0.0",
+  "author": "Victor Rodrigues (https://github.com/victorrodriguessf)",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",

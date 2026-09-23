@@ -1,0 +1,78 @@
+LICENÇA DE USO, MANUTENÇÃO E MODIFICAÇÃO COM ATRIBUIÇÃO OBRIGATÓRIA
+Versão 1.0 — Brasil
+
+Copyright © 2026 Victor Rodrigues
+GitHub: https://github.com/victorrodriguessf
+
+1. Objeto
+
+Esta licença aplica-se ao código-fonte, à documentação e aos elementos originais
+do software "Organização Oncology" criados por Victor Rodrigues, doravante
+denominados "Software".
+
+2. Permissões
+
+É concedida aos destinatários legítimos do Software uma licença não exclusiva
+para executar, copiar para fins de segurança, estudar, manter, adaptar,
+modificar e implantar o Software para uso próprio ou interno da organização à
+qual ele foi legitimamente entregue.
+
+O Software pode ser compartilhado com empregados, desenvolvedores e
+prestadores que necessitem de acesso para operação, manutenção ou evolução,
+desde que essas pessoas sejam informadas desta licença e se obriguem a
+respeitá-la.
+
+3. Atribuição obrigatória
+
+Toda cópia, versão modificada, continuação ou derivação do Software deverá:
+
+a) preservar este arquivo LICENSE e o arquivo NOTICE.md;
+b) preservar os avisos de autoria existentes no código e na documentação;
+c) exibir, na documentação principal e na interface do sistema, de forma
+razoavelmente visível, o seguinte crédito:
+
+   "Desenvolvido originalmente por Victor Rodrigues (@victorrodriguessf)."
+
+d) quando publicada em repositório, manter o crédito com link para
+https://github.com/victorrodriguessf;
+e) identificar separadamente as alterações relevantes e seus respectivos
+autores, sem atribuí-las falsamente ao autor original.
+
+É vedado remover, ocultar ou alterar o crédito de maneira que negue ou induza
+a erro sobre a autoria original do Software.
+
+4. Limites da licença
+
+Esta licença não transfere a autoria nem constitui cessão total dos direitos
+sobre o Software. A venda, sublicença comercial, publicação pública ou
+redistribuição a terceiros para finalidade diferente de operação, manutenção
+ou evolução do projeto exige autorização prévia e escrita de Victor Rodrigues,
+sem prejuízo das normas legais e de eventuais direitos de terceiros.
+
+As contribuições posteriores pertencem aos seus respectivos autores ou
+titulares, conforme a lei e os contratos aplicáveis, mas não eliminam os
+direitos nem a atribuição relativos ao material original.
+
+5. Materiais excluídos
+
+Esta licença não concede direitos sobre:
+
+a) dados pessoais, profissionais, administrativos ou comerciais;
+b) planilhas e bases de dados fornecidas por terceiros;
+c) nomes empresariais, marcas, logotipos e demais sinais distintivos;
+d) bibliotecas, fontes, imagens ou outros componentes de terceiros.
+
+Esses materiais permanecem sujeitos às autorizações, contratos e licenças de
+seus respectivos titulares.
+
+6. Garantia e suporte
+
+O Software é entregue no estado em que se encontra. Esta licença, isoladamente,
+não cria obrigação de hospedagem, atualização, suporte, correção, continuidade
+ou adequação a finalidade específica. Serviços e garantias adicionais dependem
+de ajuste escrito, respeitadas as disposições legais obrigatórias aplicáveis.
+
+7. Legislação aplicável
+
+Esta licença será interpretada conforme a legislação brasileira, especialmente
+a Lei nº 9.609/1998 e, subsidiariamente, a Lei nº 9.610/1998.

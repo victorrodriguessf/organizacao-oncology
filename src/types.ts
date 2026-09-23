@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 export interface Source { sheetId: string; sheet: string; row: number; cell: string }
 export interface Unit { id: string; name: string; short: string; logo: string | null; color: string }
 export interface Professional { id: string; name: string; registration: string; council: string; aliases: string[]; specialties: string[]; units: string[]; sources: Source[] }

@@ -1,3 +1,4 @@
+// Copyright © 2026 Victor Rodrigues (@victorrodriguessf). Consulte LICENSE.
 import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ context }) => {
@@ -9,6 +10,8 @@ test('unit to specialty to doctor shows only unit-specific information', async (
  const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
  await page.goto('/');
  await expect(page.getByRole('heading', { name: /Pessoas que cuidam.*Informações que conectam/ })).toBeVisible();
+ await expect(page.getByText('Desenvolvido originalmente por')).toBeVisible();
+ await expect(page.getByRole('link', { name: 'Victor Rodrigues · @victorrodriguessf' })).toHaveAttribute('href', 'https://github.com/victorrodriguessf');
  await expect(page.locator('.unit-tile')).toHaveCount(5);
  await page.locator('.unit-tile').filter({ hasText: 'Clínica de Oncologia e Mastologia' }).click();
  await expect(page.getByRole('heading', { name: 'Clínica de Oncologia e Mastologia' })).toBeVisible();
